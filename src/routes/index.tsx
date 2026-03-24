@@ -1,4 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
+import { Container } from '@mui/material';
 
 export const Route = createFileRoute('/')({
   component: Index,
@@ -6,8 +7,8 @@ export const Route = createFileRoute('/')({
 
 function Index() {
   return (
-    <div>
-      <h3>Main branch</h3>
-    </div>
+    <Container maxWidth="xl" sx={{ height: '100vh' }}>
+      main page
+    </Container>
   );
 }

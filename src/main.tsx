@@ -1,13 +1,13 @@
 import './index.css';
 import { StrictMode } from 'react';
 import ReactDOM from 'react-dom/client';
-import { createRouter, RouterProvider } from '@tanstack/react-router';
-import { routeTree } from '@/routeTree.gen.ts';
-import { Container, CssBaseline } from '@mui/material';
+import { RouterProvider } from '@tanstack/react-router';
+import { CssBaseline } from '@mui/material';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from '@/api/queryClient.ts';
-
-const router = createRouter({ routeTree });
+import router from '@/router.tsx';
+import routerConfig from '@/router.tsx';
+import { ErrorBoundary } from 'react-error-boundary';
 
 declare module '@tanstack/react-router' {
   interface Register {
@@ -20,12 +20,12 @@ if (!rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement);
   root.render(
     <StrictMode>
-      <CssBaseline />
-      <QueryClientProvider client={queryClient}>
-        <Container maxWidth="sm">
-          <RouterProvider router={router} />
-        </Container>
-      </QueryClientProvider>
+      <ErrorBoundary fallback={<div>error boundary</div>}>
+        <CssBaseline />
+        <QueryClientProvider client={queryClient}>
+          <RouterProvider router={routerConfig} />
+        </QueryClientProvider>
+      </ErrorBoundary>
     </StrictMode>
   );
 }
