@@ -1,6 +1,6 @@
 import { createFileRoute, isRedirect, redirect } from '@tanstack/react-router';
 import { api } from '@/api/axiosInstance.ts';
-import GlobalLoader from '@/components/GlobalLoader/GlobalLoader.tsx';
+import { GlobalLoader } from '@/components/Global';
 
 export const Route = createFileRoute('/_authenticated')({
   beforeLoad: async ({ context }) => {
