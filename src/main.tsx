@@ -25,9 +25,9 @@ if (!rootElement.innerHTML) {
         <ThemeProvider theme={theme}>
           <QueryClientProvider client={queryClient}>
             <RouterProvider router={routerConfig} />
+            <CssBaseline />
           </QueryClientProvider>
         </ThemeProvider>
-        <CssBaseline />
       </ErrorBoundary>
     </StrictMode>
   );
