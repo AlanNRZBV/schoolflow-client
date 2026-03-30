@@ -1,12 +1,5 @@
 import { useAppForm } from '@/hooks/CreateFormHook.tsx';
-import {
-  Alert,
-  Box,
-  Collapse,
-  IconButton,
-  InputAdornment,
-  Typography,
-} from '@mui/material';
+import { Box, IconButton, InputAdornment, Typography } from '@mui/material';
 import React, { useState } from 'react';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { CustomLink } from '@/components/UI';
@@ -44,6 +37,7 @@ const AuthForm = () => {
   const clearError = () => {
     if (signInMutation.isError) signInMutation.reset();
   };
+
   return (
     <Box
       display="flex"
@@ -166,12 +160,6 @@ const AuthForm = () => {
               Забыли пароль?
             </CustomLink>
           </Box>
-          <Collapse in={signInMutation.isError}>
-            <Alert severity="error" sx={{ mt: 1 }}>
-              {signInMutation.error?.message ||
-                'Не удалось войти. Проверьте данные.'}
-            </Alert>
-          </Collapse>
         </Box>
         <form.AppForm>
           <form.Button
