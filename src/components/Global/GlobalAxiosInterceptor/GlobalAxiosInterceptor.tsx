@@ -1,7 +1,7 @@
 import { type ReactNode, useEffect } from 'react';
 import { api } from '@/api/axiosInstance';
 import { useNotification } from '@/context/NotificationContext.tsx';
-import { parseApiError } from '@/lib/utils/errorHandler.ts';
+import { parseApiError } from '@/lib/utils';
 
 export const GlobalAxiosInterceptor = ({
   children,
