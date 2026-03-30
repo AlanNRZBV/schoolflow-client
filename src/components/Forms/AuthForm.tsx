@@ -1,9 +1,17 @@
 import { useAppForm } from '@/hooks/CreateFormHook.tsx';
-import { z } from 'zod';
-import { Box, IconButton, InputAdornment, Typography } from '@mui/material';
+import {
+  Alert,
+  Box,
+  Collapse,
+  IconButton,
+  InputAdornment,
+  Typography,
+} from '@mui/material';
 import React, { useState } from 'react';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { CustomLink } from '@/components/UI';
+import { useSignIn } from '@/hooks/useSignIn.ts';
+import { signInSchema, signInSchemaDefaultValues } from '@/lib/zodSchemas';
 
 const AuthForm = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -20,21 +28,22 @@ const AuthForm = () => {
   ) => {
     event.preventDefault();
   };
+
+  const signInMutation = useSignIn();
+
   const form = useAppForm({
-    defaultValues: {
-      email: '',
-      password: '',
-    },
+    defaultValues: signInSchemaDefaultValues,
     validators: {
-      onChange: z.object({
-        email: z.string(),
-        password: z.string().min(4),
-      }),
+      onSubmit: signInSchema,
     },
-    onSubmit: ({ value }) => {
-      console.log(value);
+    onSubmit: async ({ value }) => {
+      await signInMutation.mutateAsync(value);
     },
   });
+
+  const clearError = () => {
+    if (signInMutation.isError) signInMutation.reset();
+  };
   return (
     <Box
       display="flex"
@@ -68,54 +77,113 @@ const AuthForm = () => {
         }}
       >
         <Box display="flex" flexDirection="column" gap={2}>
-          <form.AppField
-            name="email"
-            children={(field) => <field.TextField label="Почта" />}
-          />
-          <form.AppField
-            name="password"
-            children={(field) => (
-              <field.TextField
-                label="Пароль"
-                type={showPassword ? 'text' : 'password'}
-                slotProps={{
-                  input: {
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton
-                          aria-label={
-                            showPassword
-                              ? 'hide the password'
-                              : 'display the password'
-                          }
-                          onClick={handleClickShowPassword}
-                          onMouseDown={handleMouseDownPassword}
-                          onMouseUp={handleMouseUpPassword}
-                          edge="end"
-                        >
-                          {showPassword ? <VisibilityOff /> : <Visibility />}
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                  },
-                }}
-              />
-            )}
-          />
+          <Box display="flex" flexDirection="column" gap={2}>
+            <form.AppField
+              name="email"
+              children={(field) => {
+                console.log(field.state.meta.errors);
+                console.log(field.state);
+                const isTouched = field.state.meta.isTouched;
+                const errors = field.state.meta.errors;
+                const hasError = isTouched && errors.length > 0;
+                const fieldErrors = field.state.meta.errors.filter(
+                  (e) => !!e && (!e?.path || e.path[0] === field.name)
+                );
+                const errorMessage = fieldErrors
+                  .map((e: any) => e.message ?? e)
+                  .join(', ');
+                return (
+                  <field.TextField
+                    label="Почта"
+                    error={hasError}
+                    helperText={hasError ? errorMessage : '\u00A0'}
+                    onBlur={field.handleBlur}
+                    value={field.state.value}
+                    onChange={(e) => {
+                      field.handleChange(e.target.value);
+                      clearError();
+                    }}
+                  />
+                );
+              }}
+            />
+            <form.AppField
+              name="password"
+              children={(field) => {
+                const isTouched = field.state.meta.isTouched;
+                const errors = field.state.meta.errors;
+                const hasError = isTouched && errors.length > 0;
+                const fieldErrors = field.state.meta.errors.filter(
+                  (e) => !!e && (!e?.path || e.path[0] === field.name)
+                );
+                const errorMessage = fieldErrors
+                  .map((err: any) => err.message ?? err)
+                  .join(', ');
+                return (
+                  <field.TextField
+                    label="Пароль"
+                    error={hasError}
+                    helperText={hasError ? errorMessage : '\u00A0'}
+                    onBlur={field.handleBlur}
+                    value={field.state.value}
+                    onChange={(e) => {
+                      field.handleChange(e.target.value);
+                      clearError();
+                    }}
+                    type={showPassword ? 'text' : 'password'}
+                    slotProps={{
+                      input: {
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <IconButton
+                              aria-label={
+                                showPassword
+                                  ? 'hide the password'
+                                  : 'display the password'
+                              }
+                              onClick={handleClickShowPassword}
+                              onMouseDown={handleMouseDownPassword}
+                              onMouseUp={handleMouseUpPassword}
+                              edge="end"
+                            >
+                              {showPassword ? (
+                                <VisibilityOff />
+                              ) : (
+                                <Visibility />
+                              )}
+                            </IconButton>
+                          </InputAdornment>
+                        ),
+                      },
+                    }}
+                  />
+                );
+              }}
+            />
+          </Box>
           <Box display="flex">
             <CustomLink to="/auth/forgot-password" marginLeft="auto">
               Забыли пароль?
             </CustomLink>
           </Box>
+          <Collapse in={signInMutation.isError}>
+            <Alert severity="error" sx={{ mt: 1 }}>
+              {signInMutation.error?.message ||
+                'Не удалось войти. Проверьте данные.'}
+            </Alert>
+          </Collapse>
         </Box>
         <form.AppForm>
           <form.Button
             variant="contained"
+            type="submit"
             size="large"
             fullWidth
+            disabled={signInMutation.isPending}
+            loading={signInMutation.isPending}
             sx={{ marginTop: { xs: 4, lg: 6 } }}
           >
-            Войти
+            {signInMutation.isPending ? 'Входим...' : 'Войти'}
           </form.Button>
         </form.AppForm>
       </form>
