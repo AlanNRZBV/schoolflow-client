@@ -50,14 +50,14 @@ const AuthForm = () => {
         </Typography>
         <Box
           display="flex"
-          flexDirection={{ sm: 'row', xs: 'column' }}
+          flexDirection={{ lg: 'row', xs: 'column' }}
           alignSelf="flex-end"
           gap={1}
         >
           <Typography variant="body1" color="text.secondary">
             Нет, аккаунта?
           </Typography>
-          <CustomLink to="/auth/sign-up">Регистрация</CustomLink>
+          <CustomLink to="/auth/sign-up">Как получить доступ</CustomLink>
         </Box>
       </Box>
 
