@@ -1,12 +1,14 @@
-import { Box, Typography } from '@mui/material';
+import { Alert, Box, Typography } from '@mui/material';
 import { useAppForm } from '@/hooks/CreateFormHook.tsx';
 import { CustomLink } from '@/components/UI';
 import { useSignIn } from '@/hooks/useSignIn.ts';
 import { signInSchema, signInSchemaDefaultValues } from '@/lib/zodSchemas';
 import { FormPasswordInput, FormTextField } from '@/components/Forms';
+import { useSearch } from '@tanstack/react-router';
 
 const AuthForm = () => {
   const signInMutation = useSignIn();
+  const { expired } = useSearch({ from: '/auth/sign-in' });
 
   const form = useAppForm({
     defaultValues: signInSchemaDefaultValues,
@@ -37,6 +39,11 @@ const AuthForm = () => {
       width={{ xs: '100%', sm: '75%', md: '100%' }}
       maxWidth={{ lg: '650px' }}
     >
+      {expired && (
+        <Alert severity="info" sx={{ mb: 3, borderRadius: 2 }}>
+          Время вашей сессии истекло. Пожалуйста, войдите снова.
+        </Alert>
+      )}
       <Box display="flex" justifyContent="space-between" mb={{ xs: 4, lg: 6 }}>
         <Typography variant="h3" color="text.primary">
           Войдите
