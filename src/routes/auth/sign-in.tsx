@@ -2,8 +2,15 @@ import { createFileRoute } from '@tanstack/react-router';
 import { Box, Fade, Grid } from '@mui/material';
 import heroImage from '@/assets/hero-human-placeholder.svg';
 import { AuthForm } from '@/components/Forms';
+import { z } from 'zod';
+
+const signInSearchSchema = z.object({
+  redirect: z.string().optional().catch('/'),
+  expired: z.boolean().optional().catch(false),
+});
 
 export const Route = createFileRoute('/auth/sign-in')({
+  validateSearch: signInSearchSchema,
   component: RouteComponent,
 });
 
