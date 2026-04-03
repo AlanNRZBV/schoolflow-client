@@ -13,7 +13,7 @@ export const parseApiError = (error: unknown): ParsedError => {
 
   if (error instanceof AxiosError) {
     const status = error.response?.status;
-    const serverMessage = error.response?.data?.message;
+    const serverMessage: string = error.response?.data?.message;
 
     switch (status) {
       case 400:
