@@ -67,7 +67,7 @@ const AuthForm = () => {
               children={(field) => (
                 <FormTextField
                   field={field}
-                  label="Почта"
+                  label="Email"
                   onValueChange={(val: string) =>
                     handleFieldChange(field.handleChange, val)
                   }
