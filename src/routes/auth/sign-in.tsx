@@ -31,6 +31,9 @@ function RouteComponent() {
           flexDirection="column"
           justifyContent="space-between"
         >
+          <Box display="flex" gap={2}>
+            <CustomLink to="/">Home</CustomLink>
+          </Box>
           <Fade
             in={true}
             timeout={750}
@@ -50,6 +53,11 @@ function RouteComponent() {
               }}
             />
           </Fade>
+          <Box display="flex" gap={2}>
+            <CustomLink to="/">Home</CustomLink>
+            <CustomLink to="/">Home</CustomLink>
+            <CustomLink to="/">Home</CustomLink>
+          </Box>
         </Grid>
       </Grid>
       <Grid
