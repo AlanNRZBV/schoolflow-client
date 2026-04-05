@@ -8,7 +8,8 @@ import { queryClient } from '@/api';
 import router from '@/router.tsx';
 import { ErrorBoundary } from 'react-error-boundary';
 import theme from '@/theme.ts';
-import { GlobalAxiosInterceptor } from '@/components/Global/GlobalAxiosInterceptor/GlobalAxiosInterceptor.tsx';
+import { NotificationProvider } from '@/context';
+import { AxiosGlobalInterceptor } from '@/api';
 
 const rootElement = document.getElementById('root')!;
 
@@ -18,14 +19,14 @@ if (!rootElement.innerHTML) {
     <StrictMode>
       <ErrorBoundary fallback={<div>error boundary</div>}>
         <NotificationProvider>
-          <GlobalAxiosInterceptor>
+          <AxiosGlobalInterceptor>
             <ThemeProvider theme={theme}>
               <QueryClientProvider client={queryClient}>
                 <RouterProvider router={router} />
                 <CssBaseline />
               </QueryClientProvider>
             </ThemeProvider>
-          </GlobalAxiosInterceptor>
+          </AxiosGlobalInterceptor>
         </NotificationProvider>
       </ErrorBoundary>
     </StrictMode>
