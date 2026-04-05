@@ -8,6 +8,8 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
+import { createFileRoute } from '@tanstack/react-router'
+
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthRouteRouteImport } from './routes/auth/route'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
@@ -15,8 +17,13 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthSignUpRouteImport } from './routes/auth/sign-up'
 import { Route as AuthSignInRouteImport } from './routes/auth/sign-in'
 import { Route as AuthForgotPasswordRouteImport } from './routes/auth/forgot-password'
-import { Route as AuthenticatedStudentRouteRouteImport } from './routes/_authenticated/student/route'
-import { Route as AuthenticatedStaffRouteRouteImport } from './routes/_authenticated/staff/route'
+import { Route as AuthenticatedDashboardRouteRouteImport } from './routes/_authenticated/dashboard/route'
+import { Route as AuthenticatedDashboardStudentRouteRouteImport } from './routes/_authenticated/dashboard/student/route'
+import { Route as AuthenticatedDashboardStaffRouteRouteImport } from './routes/_authenticated/dashboard/staff/route'
+
+const AuthenticatedDashboardAdminRouteLazyRouteImport = createFileRoute(
+  '/_authenticated/dashboard/admin',
+)()
 
 const AuthRouteRoute = AuthRouteRouteImport.update({
   id: '/auth',
@@ -47,76 +54,105 @@ const AuthForgotPasswordRoute = AuthForgotPasswordRouteImport.update({
   path: '/forgot-password',
   getParentRoute: () => AuthRouteRoute,
 } as any)
-const AuthenticatedStudentRouteRoute =
-  AuthenticatedStudentRouteRouteImport.update({
-    id: '/student',
-    path: '/student',
+const AuthenticatedDashboardRouteRoute =
+  AuthenticatedDashboardRouteRouteImport.update({
+    id: '/dashboard',
+    path: '/dashboard',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedStaffRouteRoute = AuthenticatedStaffRouteRouteImport.update({
-  id: '/staff',
-  path: '/staff',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
+const AuthenticatedDashboardAdminRouteLazyRoute =
+  AuthenticatedDashboardAdminRouteLazyRouteImport.update({
+    id: '/admin',
+    path: '/admin',
+    getParentRoute: () => AuthenticatedDashboardRouteRoute,
+  } as any).lazy(() =>
+    import('./routes/_authenticated/dashboard/admin/route.lazy').then(
+      (d) => d.Route,
+    ),
+  )
+const AuthenticatedDashboardStudentRouteRoute =
+  AuthenticatedDashboardStudentRouteRouteImport.update({
+    id: '/student',
+    path: '/student',
+    getParentRoute: () => AuthenticatedDashboardRouteRoute,
+  } as any)
+const AuthenticatedDashboardStaffRouteRoute =
+  AuthenticatedDashboardStaffRouteRouteImport.update({
+    id: '/staff',
+    path: '/staff',
+    getParentRoute: () => AuthenticatedDashboardRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRouteRouteWithChildren
-  '/staff': typeof AuthenticatedStaffRouteRoute
-  '/student': typeof AuthenticatedStudentRouteRoute
+  '/dashboard': typeof AuthenticatedDashboardRouteRouteWithChildren
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/sign-in': typeof AuthSignInRoute
   '/auth/sign-up': typeof AuthSignUpRoute
+  '/dashboard/staff': typeof AuthenticatedDashboardStaffRouteRoute
+  '/dashboard/student': typeof AuthenticatedDashboardStudentRouteRoute
+  '/dashboard/admin': typeof AuthenticatedDashboardAdminRouteLazyRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRouteRouteWithChildren
-  '/staff': typeof AuthenticatedStaffRouteRoute
-  '/student': typeof AuthenticatedStudentRouteRoute
+  '/dashboard': typeof AuthenticatedDashboardRouteRouteWithChildren
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/sign-in': typeof AuthSignInRoute
   '/auth/sign-up': typeof AuthSignUpRoute
+  '/dashboard/staff': typeof AuthenticatedDashboardStaffRouteRoute
+  '/dashboard/student': typeof AuthenticatedDashboardStudentRouteRoute
+  '/dashboard/admin': typeof AuthenticatedDashboardAdminRouteLazyRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRouteRouteWithChildren
-  '/_authenticated/staff': typeof AuthenticatedStaffRouteRoute
-  '/_authenticated/student': typeof AuthenticatedStudentRouteRoute
+  '/_authenticated/dashboard': typeof AuthenticatedDashboardRouteRouteWithChildren
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/sign-in': typeof AuthSignInRoute
   '/auth/sign-up': typeof AuthSignUpRoute
+  '/_authenticated/dashboard/staff': typeof AuthenticatedDashboardStaffRouteRoute
+  '/_authenticated/dashboard/student': typeof AuthenticatedDashboardStudentRouteRoute
+  '/_authenticated/dashboard/admin': typeof AuthenticatedDashboardAdminRouteLazyRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/auth'
-    | '/staff'
-    | '/student'
+    | '/dashboard'
     | '/auth/forgot-password'
     | '/auth/sign-in'
     | '/auth/sign-up'
+    | '/dashboard/staff'
+    | '/dashboard/student'
+    | '/dashboard/admin'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/auth'
-    | '/staff'
-    | '/student'
+    | '/dashboard'
     | '/auth/forgot-password'
     | '/auth/sign-in'
     | '/auth/sign-up'
+    | '/dashboard/staff'
+    | '/dashboard/student'
+    | '/dashboard/admin'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/auth'
-    | '/_authenticated/staff'
-    | '/_authenticated/student'
+    | '/_authenticated/dashboard'
     | '/auth/forgot-password'
     | '/auth/sign-in'
     | '/auth/sign-up'
+    | '/_authenticated/dashboard/staff'
+    | '/_authenticated/dashboard/student'
+    | '/_authenticated/dashboard/admin'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -169,31 +205,65 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthForgotPasswordRouteImport
       parentRoute: typeof AuthRouteRoute
     }
-    '/_authenticated/student': {
-      id: '/_authenticated/student'
-      path: '/student'
-      fullPath: '/student'
-      preLoaderRoute: typeof AuthenticatedStudentRouteRouteImport
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthenticatedDashboardRouteRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/staff': {
-      id: '/_authenticated/staff'
+    '/_authenticated/dashboard/admin': {
+      id: '/_authenticated/dashboard/admin'
+      path: '/admin'
+      fullPath: '/dashboard/admin'
+      preLoaderRoute: typeof AuthenticatedDashboardAdminRouteLazyRouteImport
+      parentRoute: typeof AuthenticatedDashboardRouteRoute
+    }
+    '/_authenticated/dashboard/student': {
+      id: '/_authenticated/dashboard/student'
+      path: '/student'
+      fullPath: '/dashboard/student'
+      preLoaderRoute: typeof AuthenticatedDashboardStudentRouteRouteImport
+      parentRoute: typeof AuthenticatedDashboardRouteRoute
+    }
+    '/_authenticated/dashboard/staff': {
+      id: '/_authenticated/dashboard/staff'
       path: '/staff'
-      fullPath: '/staff'
-      preLoaderRoute: typeof AuthenticatedStaffRouteRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      fullPath: '/dashboard/staff'
+      preLoaderRoute: typeof AuthenticatedDashboardStaffRouteRouteImport
+      parentRoute: typeof AuthenticatedDashboardRouteRoute
     }
   }
 }
 
+interface AuthenticatedDashboardRouteRouteChildren {
+  AuthenticatedDashboardStaffRouteRoute: typeof AuthenticatedDashboardStaffRouteRoute
+  AuthenticatedDashboardStudentRouteRoute: typeof AuthenticatedDashboardStudentRouteRoute
+  AuthenticatedDashboardAdminRouteLazyRoute: typeof AuthenticatedDashboardAdminRouteLazyRoute
+}
+
+const AuthenticatedDashboardRouteRouteChildren: AuthenticatedDashboardRouteRouteChildren =
+  {
+    AuthenticatedDashboardStaffRouteRoute:
+      AuthenticatedDashboardStaffRouteRoute,
+    AuthenticatedDashboardStudentRouteRoute:
+      AuthenticatedDashboardStudentRouteRoute,
+    AuthenticatedDashboardAdminRouteLazyRoute:
+      AuthenticatedDashboardAdminRouteLazyRoute,
+  }
+
+const AuthenticatedDashboardRouteRouteWithChildren =
+  AuthenticatedDashboardRouteRoute._addFileChildren(
+    AuthenticatedDashboardRouteRouteChildren,
+  )
+
 interface AuthenticatedRouteRouteChildren {
-  AuthenticatedStaffRouteRoute: typeof AuthenticatedStaffRouteRoute
-  AuthenticatedStudentRouteRoute: typeof AuthenticatedStudentRouteRoute
+  AuthenticatedDashboardRouteRoute: typeof AuthenticatedDashboardRouteRouteWithChildren
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
-  AuthenticatedStaffRouteRoute: AuthenticatedStaffRouteRoute,
-  AuthenticatedStudentRouteRoute: AuthenticatedStudentRouteRoute,
+  AuthenticatedDashboardRouteRoute:
+    AuthenticatedDashboardRouteRouteWithChildren,
 }
 
 const AuthenticatedRouteRouteWithChildren =
