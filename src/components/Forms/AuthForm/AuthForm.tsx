@@ -1,5 +1,5 @@
 import { Alert, Box, Typography } from '@mui/material';
-import { useAppForm } from '@/hooks/CreateFormHook.tsx';
+import { useAppForm } from '@/hooks/useCreateFormHook.tsx';
 import { CustomLink } from '@/components/UI';
 import { useSignIn } from '@/hooks/useSignIn.ts';
 import { signInSchema, signInSchemaDefaultValues } from '@/lib/zodSchemas';
@@ -15,8 +15,8 @@ const AuthForm = () => {
     validators: {
       onSubmit: signInSchema,
     },
-    onSubmit: async ({ value }) => {
-      await signInMutation.mutateAsync(value);
+    onSubmit: ({ value }) => {
+      signInMutation.mutate(value);
     },
   });
 
