@@ -24,7 +24,6 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
   errorComponent: ({ error }) => {
     return (
       <div className="p-8 text-red-600">
-        <h2>Auth check failed</h2>
         <pre>{error?.message || error?.toString()}</pre>
       </div>
     );

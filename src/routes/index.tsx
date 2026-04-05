@@ -1,5 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { Container } from '@mui/material';
+import { Box, Container } from '@mui/material';
+import { CustomLink } from '@/components/UI';
 
 export const Route = createFileRoute('/')({
   component: Index,
