@@ -1,18 +1,28 @@
 import { createFileRoute, isRedirect, redirect } from '@tanstack/react-router';
 import { api } from '@/api/axiosInstance.ts';
 import { GlobalLoader } from '@/components/Global';
+import type { RoleKey } from '@/types/roles.types.ts';
+
+export interface AuthMeResponse {
+  user: {
+    id: string;
+    role: RoleKey;
+  };
+  message: string;
+}
 
 export const Route = createFileRoute('/_authenticated')({
   beforeLoad: async ({ context }) => {
     try {
-      await context.queryClient.ensureQueryData({
+      const { user } = await context.queryClient.ensureQueryData({
         queryKey: ['auth', 'me'],
         queryFn: async () => {
-          const res = await api.get('/auth/me');
+          const res = await api.get<AuthMeResponse>('/auth/me');
           return res.data;
         },
         staleTime: 24 * 60 * 60 * 1000,
       });
+      return { user };
     } catch (e) {
       if (isRedirect(e)) throw e;
       throw redirect({
