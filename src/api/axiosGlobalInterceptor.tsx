@@ -1,17 +1,16 @@
 import React, { useEffect } from 'react';
-import { useRouter } from '@tanstack/react-router';
 import { AxiosError } from 'axios';
 import { api } from '@/api/axiosInstance';
 import { useNotification } from '@/context/NotificationContext.tsx';
 import { parseApiError } from '@/lib/utils';
+import router from '@/router.tsx';
 
-export const GlobalAxiosInterceptor = ({
+export const AxiosGlobalInterceptor = ({
   children,
 }: {
   children: React.ReactNode;
 }) => {
   const { showNotification } = useNotification();
-  const router = useRouter();
 
   useEffect(() => {
     const responseInterceptor = api.interceptors.response.use(
@@ -47,7 +46,7 @@ export const GlobalAxiosInterceptor = ({
     return () => {
       api.interceptors.response.eject(responseInterceptor);
     };
-  }, [showNotification, router]);
+  }, [showNotification]);
 
   return <>{children}</>;
 };
