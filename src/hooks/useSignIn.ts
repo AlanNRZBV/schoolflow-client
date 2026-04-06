@@ -23,7 +23,7 @@ export const useSignIn = () => {
       return signInResponseSchema.parse(res.data);
     },
     onSuccess: async (data) => {
-      await queryClient.invalidateQueries({ queryKey: ['auth', 'me'] });
+      queryClient.setQueryData(['auth','me'],data.user)
       const role = data.user.role;
       let rolePath = '/dashboard';
 
