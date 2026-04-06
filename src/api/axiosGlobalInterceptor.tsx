@@ -1,0 +1,52 @@
+import React, { useEffect } from 'react';
+import { AxiosError } from 'axios';
+import { api } from '@/api/axiosInstance';
+import { useNotification } from '@/context/NotificationContext.tsx';
+import { parseApiError } from '@/lib/utils';
+import router from '@/router.tsx';
+
+export const AxiosGlobalInterceptor = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
+  const { showNotification } = useNotification();
+
+  useEffect(() => {
+    const responseInterceptor = api.interceptors.response.use(
+      (response) => response,
+      (error: AxiosError) => {
+        const isUnauthorized = error.response?.status === 401;
+        const isSignInRequest = error.config?.url === '/auth/sign-in';
+
+        if (isUnauthorized && !isSignInRequest) {
+          const currentPath = router.state.location.pathname;
+
+          router.navigate({
+            to: '/auth/sign-in',
+            search: {
+              redirect: currentPath,
+              expired: true,
+            },
+            replace: true,
+          });
+          return Promise.reject(error);
+        }
+        const { title, message } = parseApiError(error);
+        showNotification({
+          title,
+          message,
+          severity: 'error',
+        });
+
+        return Promise.reject(error);
+      }
+    );
+
+    return () => {
+      api.interceptors.response.eject(responseInterceptor);
+    };
+  }, [showNotification]);
+
+  return <>{children}</>;
+};
